@@ -2,9 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, Alert, Text } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import Modal from "react-native-modal";
-
 import { firebase } from "../../../config";
-
+import { WebView } from 'react-native-webview';
 import { AuthContext } from "../../features/AuthContext";
 import Loading from "../../components/Loading";
 import Geolocation from "react-native-geocoding";
@@ -13,6 +12,8 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import CartAppbar from "./UserUtil/CartAppbar";
 import CartContainer from "./UserUtil/CartContainer";
 import { useCart } from "../../features/CartContext";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 const DashboardScreen = () => {
   Geolocation.init("AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg");
@@ -102,7 +103,8 @@ const DashboardScreen = () => {
     }
   }, [user, selectedAddress, isFocused]);
 
-  console.log(selectedAddress)
+  console.log(data)
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CartAppbar />
@@ -146,11 +148,18 @@ const DashboardScreen = () => {
             {selectedAddress ? (
               <>
                 <View className="p-3 flex gap-4 h-full">
-                  <Text className={`text-[#3498db] text-lg font-semibold `}>
-                    {data?.user_name}
+                <Text className="text-sm border-b text-[#3498db] border-gray-200 pb-2 uppercase">
+                    <MaterialCommunityIcons
+                      name="shopping-outline"
+                      color="#3498db"
+                      size={20}
+                    />
+                     &nbsp; {data?.user_name}
                   </Text>
 
+
                   <Text>{addressFormatted}</Text>
+          
                   <Button
                     title="View Services"
                     onPress={handleViewServices}

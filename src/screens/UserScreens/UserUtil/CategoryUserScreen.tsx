@@ -46,7 +46,7 @@ const CategoryUserScreen = ({ route, navigation }) => {
   }, [route.params.user.email]);
 
   const { width: screenWidth } = Dimensions.get("window");
-  const itemWidth = screenWidth / 2.3;
+  const itemWidth = screenWidth / 2.2;
 
   const handleToggleCart = (item) => {
     const isInCart = cart.some((cartItem) => cartItem.id === item.id);
@@ -63,17 +63,16 @@ const CategoryUserScreen = ({ route, navigation }) => {
       addToCart(itemWithNumericPrice);
     }
   };
-  console.log(route.params.user);
 
   const colors = ["#C4DFDF", "#D2E9E9", "#E3F4F4"];
   return (
     <View style={{ flex: 1 }}>
-      <Text className="text-xl p-2 pl-5 font-semibold bg-white  text-[#0891b2]">
+      <Text className="text-center uppercase  p-2 pl-5 font-semibold bg-white  text-[#0891b2]">
         {route.params.user.user_name} Services Offered
       </Text>
-      <ScrollView style={{ zIndex: 0 }}>
+      <ScrollView style={{ zIndex: 0 }} className="pt-5">
         {items ? (
-          <View className="p-5 rounded flex-wrap flex-row gap-2.5 z-0">
+          <View className="items-center  justify-center rounded flex-wrap flex-row p-2  z-0 pb-10">
             {items.map((item, index) => {
               const isInCart = cart.some((cartItem) => cartItem.id === item.id);
               const hasItemsFromDifferentShop = cart.some(
@@ -82,71 +81,57 @@ const CategoryUserScreen = ({ route, navigation }) => {
 
               return (
                 <View
-                  key={index}
-                  style={{
-                    width: itemWidth,
-                  }}
-                  className="z-0 rounded overflow-hidden bg-white items-center"
-                >
-                  <Text
-                    className="w-full text-slate-700 text-left text-base font-semibold p-2.5"
-                    style={{
-                      backgroundColor: colors[index % colors.length],
-                    }}
+                    key={index}
+                    className=" w-full white mt-2  flex-row  p-5  bg-white"
                   >
-                    ₱{item?.price}
-                  </Text>
-                  <View className="items-center px-5 pt-5">
-                    <View className="w-28 h-28 overflow-hidden rounded-lg">
-                      <Image
-                        source={{ uri: item.imageUrl }}
-                        className="w-full h-full"
-                      />
-                    </View>
-                    <Text className="text-[#0891b2] text-center w-full text-base">
-                      {item.category}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingTop: 10,
-                      paddingHorizontal: 20,
-                      paddingBottom: 20,
-                      width: "100%",
-                    }}
-                  >
-                    <Text style={{ fontSize: 14 }}>{item.description}</Text>
-                    {item.status ? (
-                      <View>
-                        {item.uploaderUid === route.params.user.uid &&
-                        !hasItemsFromDifferentShop ? (
-                          <TouchableOpacity
-                            onPress={() => handleToggleCart(item)}
-                            style={{
-                              backgroundColor: isInCart ? "#ff6347" : "#008000",
-                            }}
-                            className="w-full rounded-sm mt-2.5 py-2"
-                          >
-                            <Text
-                              style={{ color: "#fff", textAlign: "center" }}
-                            >
-                              {isInCart ? "Remove from Cart" : "Add to Cart"}
-                            </Text>
-                          </TouchableOpacity>
-                        ) : (
-                          <Text style={{ color: "red" }}>
-                            You already have items from a different shop in your
-                            cart.
-                          </Text>
-                        )}
+                    <View className="items-center ">
+                      <View className="w-28 h-28 overflow-hidden rounded-lg">
+                        <Image
+                          source={{ uri: item.imageUrl }}
+                          className="w-full h-full"
+                        />
                       </View>
-                    ) : (
-                      <Text style={{ color: "red" }}>
-                        Service not Available
+                    </View>
+                    <View className=" w-full flex-col ml-5 ">
+                      <Text className="text-[#0891b2] text-start text-base">
+                        {item.category}
                       </Text>
-                    )}
+                      <Text className="text-xs "> {item.description}</Text>
+
+                      <Text className="mt-2"> ₱{item.price}</Text>
+                      {item.status ? (
+                        <View className="w-36">
+                          {item.uploaderUid === route.params.user.uid &&
+                          !hasItemsFromDifferentShop ? (
+                            <TouchableOpacity
+                              onPress={() => handleToggleCart(item)}
+                              style={{
+                                backgroundColor: isInCart
+                                  ? "#ff6347"
+                                  : "#008000",
+                              }}
+                              className="w-full rounded-sm mt-2.5 py-2"
+                            >
+                              <Text
+                                style={{ color: "#fff", textAlign: "center" }}
+                              >
+                                {isInCart ? "Remove from Cart" : "Add to Cart"}
+                              </Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <Text style={{ color: "red" }}>
+                              You already have items from a different shop in
+                              your cart.
+                            </Text>
+                          )}
+                        </View>
+                      ) : (
+                        <Text style={{ color: "red" }}>
+                          Service not Available
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </View>
               );
             })}
           </View>

@@ -85,8 +85,8 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({
       <TitleContainer>
         <Title variant="bold">Registration</Title>
       </TitleContainer>
-      <ScrollView style={{ width: "100%" }}>
-        <FormContainer className="pt-20">
+      <ScrollView style={{ width: "100%" }} >
+        <FormContainer className="pt-20 ">
           {RegistrationJson.map((input, index) => (
             <Input
               key={index}

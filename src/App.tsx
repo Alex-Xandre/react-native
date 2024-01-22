@@ -14,6 +14,7 @@ import DashboardScreen from "./screens/UserScreens/DashboardScreen";
 import MainMenuUser from "./screens/HomeScreenUser";
 import CategoryUserScreen from "./screens/UserScreens/UserUtil/CategoryUserScreen";
 import { CartContextProvider, useCart } from "./features/CartContext";
+import BookingUserScreen from "./screens/UserScreens/UserUtil/BookingUserScreen";
 
 const Stack = createStackNavigator();
 
@@ -76,6 +77,14 @@ function App() {
                   options={{ headerShown: false }}
                   name="HomeUserPage"
                   component={MainMenuUser}
+                />
+                <Stack.Screen
+                  name="BookingUserScreen"
+                  component={BookingUserScreen}
+                  options={{
+                    headerTitle: "",
+                    headerBackTitleVisible: false,
+                  }}
                 />
                 <Stack.Screen
                   name="CategoryUserScreen"
