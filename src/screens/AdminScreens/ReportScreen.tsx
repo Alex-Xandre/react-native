@@ -57,7 +57,7 @@ const ReportScreen = () => {
       .reduce((total, item) => total + item.total, 0);
 
   return (
-    <View className="pb-24">
+    <ScrollView className="pb-10">
       <View className="rounded-sm mx-4 p-4 my-2 bg-white">
         <Text>
           Total Sales: <Text className="font-bold">₱ {completedSales}</Text>
@@ -79,87 +79,83 @@ const ReportScreen = () => {
         </Text>
       </View>
 
-      <ScrollView className="">
-        <View className=" m-3 rounded ">
-          {data &&
-            data.map((bks, index) => {
-              const timestampObject = bks.bookingDate;
-              const timestampMilliseconds = timestampObject.seconds * 1000;
-              const date = new Date(timestampMilliseconds);
-              const formattedDate = date.toLocaleString();
+      <View className=" m-3 rounded ">
+        {data &&
+          data.map((bks, index) => {
+            const timestampObject = bks.bookingDate;
+            const timestampMilliseconds = timestampObject.seconds * 1000;
+            const date = new Date(timestampMilliseconds);
+            const formattedDate = date.toLocaleString();
 
-              const timestampObjectUp = bks?.updatedAt;
-              const timestampMillisecondsUp =
-                timestampObjectUp?.seconds * 1000 +
-                timestampObjectUp?.nanoseconds / 1000000;
-              const dateUp = new Date(timestampMillisecondsUp);
-              const formattedDateUp = dateUp.toLocaleString();
+            const timestampObjectUp = bks?.updatedAt;
+            const timestampMillisecondsUp =
+              timestampObjectUp?.seconds * 1000 +
+              timestampObjectUp?.nanoseconds / 1000000;
+            const dateUp = new Date(timestampMillisecondsUp);
+            const formattedDateUp = dateUp.toLocaleString();
 
-              return (
-                <View key={index} className="bg-white my-2 p-2">
-                  <Text className="text-sm border-b w-full text-[#3498db] border-gray-200 pb-2 uppercase">
-                    Transaction ID: &nbsp;
-                    {bks.bookingUid.split("-")[0]}
-                  </Text>
-                  <Text
-                    className={`text-sm uppercase absolute right-2 top-1 p-1 rounded-sm  ${
-                      bks.status === "Pending"
-                        ? "bg-yellow-500 text-white"
-                        : bks.status === "Cancelled"
-                        ? "bg-red-500 text-white"
-                        : bks.status === "Approved"
-                        ? "bg-green-500 text-white"
-                        : bks.status === "Completed"
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-200 text-[#3498db]"
-                    }`}
-                  >
-                    {bks.status}
-                  </Text>
+            return (
+              <View key={index} className="bg-white my-2 p-2">
+                <Text className="text-sm border-b w-full text-[#3498db] border-gray-200 pb-2 uppercase">
+                  Transaction ID: &nbsp;
+                  {bks.bookingUid.split("-")[0]}
+                </Text>
+                <Text
+                  className={`text-sm uppercase absolute right-2 top-1 p-1 rounded-sm  ${
+                    bks.status === "Pending"
+                      ? "bg-yellow-500 text-white"
+                      : bks.status === "Cancelled"
+                      ? "bg-red-500 text-white"
+                      : bks.status === "Approved"
+                      ? "bg-green-500 text-white"
+                      : bks.status === "Completed"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-[#3498db]"
+                  }`}
+                >
+                  {bks.status}
+                </Text>
 
-                  <View className="flex-row justify-between p-2">
-                    <Text className="font-bold"> Booking Date: </Text>
-                    <Text>{formattedDate}</Text>
-                  </View>
+                <View className="flex-row justify-between p-2">
+                  <Text className="font-bold"> Booking Date: </Text>
+                  <Text>{formattedDate}</Text>
+                </View>
 
-                  <View className="flex-row justify-between p-2">
-                    <Text className="font-bold"> Last Status Updated: </Text>
-                    <Text>{!bks.updatedAt ? "N/A" : formattedDateUp}</Text>
-                  </View>
+                <View className="flex-row justify-between p-2">
+                  <Text className="font-bold"> Last Status Updated: </Text>
+                  <Text>{!bks.updatedAt ? "N/A" : formattedDateUp}</Text>
+                </View>
 
-                  {bks?.cart.map((crt, index) => {
-                    return (
-                      <View
-                        className="flex-row justify-between py-3 px-2 bg-[#f8fafc]"
-                        key={index}
-                      >
-                        <View>
-                          <Text className="font-semibold   ">
-                            {crt.category}
-                          </Text>
-                          <Text className="text-slate-700">
-                            {crt.description}
-                          </Text>
-                        </View>
-                        <Text className="text-xs">
-                          {crt.quantity} x ₱ {crt.price} = ₱
-                          {crt.quantity * crt.price}
+                {bks?.cart.map((crt, index) => {
+                  return (
+                    <View
+                      className="flex-row justify-between py-3 px-2 bg-[#f8fafc]"
+                      key={index}
+                    >
+                      <View>
+                        <Text className="font-semibold   ">{crt.category}</Text>
+                        <Text className="text-slate-700">
+                          {crt.description}
                         </Text>
                       </View>
-                    );
-                  })}
-                  <View className="flex-row justify-between p-2">
-                    <Text className="   font-bold">Total:</Text>
-                    <Text className="">₱ {bks.total}</Text>
-                  </View>
-
-                  <></>
+                      <Text className="text-xs">
+                        {crt.quantity} x ₱ {crt.price} = ₱
+                        {crt.quantity * crt.price}
+                      </Text>
+                    </View>
+                  );
+                })}
+                <View className="flex-row justify-between p-2">
+                  <Text className="   font-bold">Total:</Text>
+                  <Text className="">₱ {bks.total}</Text>
                 </View>
-              );
-            })}
-        </View>
-      </ScrollView>
-    </View>
+
+                <></>
+              </View>
+            );
+          })}
+      </View>
+    </ScrollView>
   );
 };
 

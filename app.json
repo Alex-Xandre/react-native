@@ -14,11 +14,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "permissions": [
-      "CAMERA",
-      "READ_EXTERNAL_STORAGE",
-      "WRITE_EXTERNAL_STORAGE"
-    ],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -31,15 +26,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "android.config.googleMaps.apiKey": "AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg",
-      "package": "com.gisgbased.laundryapp"
+      "package": "com.gisgbased.laundryapp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "766dc75e-44e0-4da7-98dc-e952200d1bdc"
+        "projectId": "8d519dd9-2aba-459e-9da9-0b7ffba79fda"
       }
     },
     "owner": "gisgbased"

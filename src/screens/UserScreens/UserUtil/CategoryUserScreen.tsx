@@ -5,10 +5,11 @@ import { ScrollView } from "react-native-gesture-handler";
 import Loading from "../../../components/Loading";
 import { useCart } from "../../../features/CartContext";
 import CartAppbar from "./CartAppbar";
+import CartContainer from "./CartContainer";
 
 const CategoryUserScreen = ({ route, navigation }) => {
   const [items, setItems] = React.useState<any>([]);
-  const { addToCart, removeFromCart, cart } = useCart();
+  const { addToCart, removeFromCart, cart,cartIsOpen } = useCart();
 
   React.useEffect(() => {
     const unsubscribeUsers = firebase
@@ -67,6 +68,7 @@ const CategoryUserScreen = ({ route, navigation }) => {
   const colors = ["#C4DFDF", "#D2E9E9", "#E3F4F4"];
   return (
     <View style={{ flex: 1 }}>
+           {cartIsOpen && <CartContainer />}
       <Text className="text-center uppercase  p-2 pl-5 font-semibold bg-white  text-[#0891b2]">
         {route.params.user.user_name} Services Offered
       </Text>
