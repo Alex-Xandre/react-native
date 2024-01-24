@@ -49,8 +49,6 @@ const LoginScreen = ({ navigation }) => {
         "token",
         userCredential.user?.stsTokenManager?.accessToken || ""
       );
-
-
     } catch (error: any) {
       alert(error.message);
     }
@@ -58,11 +56,9 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <Container>
-      <TitleContainer>
-        <Title variant="bold">Login</Title>
-      </TitleContainer>
+      <Title variant="bold">Sign in to your account</Title>
 
-      <FormContainer className="pt-20">
+      <View className="w-full p-3 bg-white rounded-md">
         <Input
           label="Username"
           variant="rounded"
@@ -73,17 +69,17 @@ const LoginScreen = ({ navigation }) => {
         <Input
           label="Password"
           secureTextEntry
-          placeholder="Passwordd"
+          placeholder="Password"
           value={password}
           onChangeText={(text) => handleChange("password", text)}
         />
         <Button title="Login" variant="primary" onPress={submit} />
         <Button
-          title="Register"
+          title="Don't have an account?"
           variant="secondary"
           onPress={() => navigation.navigate("Registration")}
         />
-      </FormContainer>
+      </View>
     </Container>
   );
 };

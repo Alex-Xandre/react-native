@@ -3,11 +3,12 @@ import { View, Text } from "react-native";
 
 import { firebase } from "../../../config";
 import { AuthContext } from "../../features/AuthContext";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 
 const ReportScreen = () => {
   const { user } = useContext(AuthContext);
-  const [data, setData] = React.useState<any>();
+  const [data, setData] = React.useState<any>([]);
+  const [categories, setCategories] = React.useState<any>([]);
   const tableHeaders = ["Date", "Price", "Status", "Action"];
   React.useEffect(() => {
     if (user !== null) {
@@ -28,57 +29,136 @@ const ReportScreen = () => {
       };
     }
   }, [user]);
-  console.log(user);
+
+  React.useEffect(() => {
+    if (user !== null) {
+      const unsubscribe = firebase
+        .firestore()
+        .collection("items")
+        .where("uploaderUid", "==", user.uid)
+        .onSnapshot((snapshot) => {
+          const itemsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setCategories(itemsData);
+        });
+
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [user]);
+
+  const completedSales =
+    data.length > 0 &&
+    data
+      .filter((item) => item.status === "Completed")
+      .reduce((total, item) => total + item.total, 0);
 
   return (
-    <View>
-      <View>
-        <Text>Total Sales:</Text>
+    <View className="pb-24">
+      <View className="rounded-sm mx-4 p-4 my-2 bg-white">
+        <Text>
+          Total Sales: <Text className="font-bold">₱ {completedSales}</Text>
+        </Text>
       </View>
-      <View>
-        <Text>Bookings:</Text>
+      <View className="rounded-sm mx-4 p-4 my-2 bg-white">
+        <Text>
+          Bookings:{" "}
+          <Text className="font-bold">
+            {" "}
+            {data.length > 0 &&
+              data.filter((x) => x.status === "Pending").length}
+          </Text>
+        </Text>
       </View>
-      <View>
-        <Text> Categories:</Text>
+      <View className="rounded-sm mx-4 my-2 p-4 bg-white">
+        <Text>
+          Categories: <Text className="font-bold">{categories.length}</Text>
+        </Text>
       </View>
 
-      <View className="m-2 bg-white p-2 rounded-md shadow-md">
-        <View className="flex-row justify-between mb-2">
-          {tableHeaders.map((header, index) => (
-            <View key={index} className="flex-1 mr-2 ">
-              <Text className="text-blue-500 font-bold text-start">{header}</Text>
-            </View>
-          ))}
+      <ScrollView className="">
+        <View className=" m-3 rounded ">
+          {data &&
+            data.map((bks, index) => {
+              const timestampObject = bks.bookingDate;
+              const timestampMilliseconds = timestampObject.seconds * 1000;
+              const date = new Date(timestampMilliseconds);
+              const formattedDate = date.toLocaleString();
+
+              const timestampObjectUp = bks?.updatedAt;
+              const timestampMillisecondsUp =
+                timestampObjectUp?.seconds * 1000 +
+                timestampObjectUp?.nanoseconds / 1000000;
+              const dateUp = new Date(timestampMillisecondsUp);
+              const formattedDateUp = dateUp.toLocaleString();
+
+              return (
+                <View key={index} className="bg-white my-2 p-2">
+                  <Text className="text-sm border-b w-full text-[#3498db] border-gray-200 pb-2 uppercase">
+                    Transaction ID: &nbsp;
+                    {bks.bookingUid.split("-")[0]}
+                  </Text>
+                  <Text
+                    className={`text-sm uppercase absolute right-2 top-1 p-1 rounded-sm  ${
+                      bks.status === "Pending"
+                        ? "bg-yellow-500 text-white"
+                        : bks.status === "Cancelled"
+                        ? "bg-red-500 text-white"
+                        : bks.status === "Approved"
+                        ? "bg-green-500 text-white"
+                        : bks.status === "Completed"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 text-[#3498db]"
+                    }`}
+                  >
+                    {bks.status}
+                  </Text>
+
+                  <View className="flex-row justify-between p-2">
+                    <Text className="font-bold"> Booking Date: </Text>
+                    <Text>{formattedDate}</Text>
+                  </View>
+
+                  <View className="flex-row justify-between p-2">
+                    <Text className="font-bold"> Last Status Updated: </Text>
+                    <Text>{!bks.updatedAt ? "N/A" : formattedDateUp}</Text>
+                  </View>
+
+                  {bks?.cart.map((crt, index) => {
+                    return (
+                      <View
+                        className="flex-row justify-between py-3 px-2 bg-[#f8fafc]"
+                        key={index}
+                      >
+                        <View>
+                          <Text className="font-semibold   ">
+                            {crt.category}
+                          </Text>
+                          <Text className="text-slate-700">
+                            {crt.description}
+                          </Text>
+                        </View>
+                        <Text className="text-xs">
+                          {crt.quantity} x ₱ {crt.price} = ₱
+                          {crt.quantity * crt.price}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                  <View className="flex-row justify-between p-2">
+                    <Text className="   font-bold">Total:</Text>
+                    <Text className="">₱ {bks.total}</Text>
+                  </View>
+
+                  <></>
+                </View>
+              );
+            })}
         </View>
-
-        {data &&
-          data.map((rowData, index) => {
-            const timestampObject = rowData.bookingDate;
-            const timestampMilliseconds = timestampObject.seconds * 1000;
-            const date = new Date(timestampMilliseconds);
-            const formattedDate = date.toLocaleString(); // Adjust the format as needed
-
-            return (
-              <View key={index} className="flex-row mb-2 w-full">
-                <View className="flex-1">
-                  <Text className="text-start">{formattedDate}</Text>
-                </View>
-                <View className="flex-1 ">
-                  <Text className="text-start">₱ {rowData.total}</Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-start">{rowData.status}</Text>
-                </View>
-                <TouchableOpacity
-                  className="flex-1 rounded underline" // Add your desired color
-                  onPress={() => console.log("Action clicked")}
-                >
-                  <Text className="text-left">Update</Text>
-                </TouchableOpacity>
-              </View>
-            );
-          })}
-      </View>
+      </ScrollView>
     </View>
   );
 };

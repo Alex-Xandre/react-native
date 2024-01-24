@@ -8,7 +8,7 @@ interface FormContainer {
 
 const TitleContainer: React.FC<FormContainer> = ({ children, className }) => {
   return (
-    <View className=" bg-[#3498db] rounded-br-full h-1/2 flex items-center justify-center w-full ">
+    <View className=" bg-[#3498db] rounded-br-full rounded-bl-full h-44 flex items-center justify-center w-full ">
       {children}
     </View>
   );

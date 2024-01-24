@@ -15,6 +15,7 @@ import MainMenuUser from "./screens/HomeScreenUser";
 import CategoryUserScreen from "./screens/UserScreens/UserUtil/CategoryUserScreen";
 import { CartContextProvider, useCart } from "./features/CartContext";
 import BookingUserScreen from "./screens/UserScreens/UserUtil/BookingUserScreen";
+import PaymentUserScreen from "./screens/UserScreens/UserUtil/PaymentUserScreen";
 
 const Stack = createStackNavigator();
 
@@ -89,6 +90,14 @@ function App() {
                 <Stack.Screen
                   name="CategoryUserScreen"
                   component={CategoryUserScreen}
+                  options={{
+                    headerTitle: "",
+                    headerBackTitleVisible: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="PaymentUserScreen"
+                  component={PaymentUserScreen}
                   options={{
                     headerTitle: "",
                     headerBackTitleVisible: false,

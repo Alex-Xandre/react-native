@@ -39,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    padding: 10,
+    padding: 8,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
@@ -49,8 +49,6 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     backgroundColor: "transparent",
-    borderColor: "#3498db",
-    borderWidth: 1,
   },
   primaryText: {
     color: "#fff",

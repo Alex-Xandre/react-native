@@ -6,24 +6,31 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Modal,
-  TextInput,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { firebase } from "../../../config";
 import { AuthContext } from "../../features/AuthContext";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { ScrollView } from "react-native-gesture-handler";
+import { TextInput } from "react-native-gesture-handler";
 import Input from "../../components/Input";
 import Loading from "../../components/Loading";
 import Button from "../../components/Button";
 import { signout } from "../../features/AuthReducer";
 import { useDispatch } from "react-redux";
+import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
 
 const ProfileScreen = () => {
   const { user } = useContext(AuthContext);
   const [userData, setUserData] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState<any>({});
-  const  dispatch  = useDispatch();
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -47,7 +54,7 @@ const ProfileScreen = () => {
     if (user) {
       fetchUserData();
     }
-  }, [user]);
+  }, [user, modalVisible]);
 
   const showEditProfileModal = () => {
     setModalVisible(true);
@@ -61,6 +68,83 @@ const ProfileScreen = () => {
     setData({ ...data, [field]: value });
   };
 
+  const chooseImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets.length > 0) {
+        setImageUri(result.assets[0].uri);
+
+        console.log(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error choosing image:", error);
+    }
+  };
+
+  const uploadImage = async () => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(imageUri);
+      const blob = await response.blob();
+      const base64data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      const cloudinaryResponse = await axios.post(
+        "https://api.cloudinary.com/v1_1/dfhhkd04c/image/upload",
+        {
+          file: base64data,
+          upload_preset: "Categories",
+        }
+      );
+
+      setLoading(false);
+
+      return cloudinaryResponse.data.secure_url;
+    } catch (error) {
+      setLoading(false);
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      setLoading(true);
+
+      const imageUrl = await uploadImage();
+
+      await firebase
+        .firestore()
+        .collection("users")
+        .doc(user.uid)
+        .update({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          contact: data.contact,
+          user_name: data.user_name,
+          email: data.email,
+          profile: imageUrl || data.profile,
+        });
+
+      Alert.alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
+      hideEditProfileModal();
+    }
+  };
   return (
     <View className="flex-1 relative">
       <ScrollView className="w-full h-screen bg-[#f8fafc]">
@@ -134,7 +218,6 @@ const ProfileScreen = () => {
           </View>
         </TouchableWithoutFeedback>
 
-        {/* Edit Profile Modal */}
         <Modal
           visible={modalVisible}
           animationType="slide"
@@ -148,7 +231,6 @@ const ProfileScreen = () => {
                 elevation: 5,
               }}
             >
-              {/* Update Profile Form */}
               {data && (
                 <View className="w-full flex justify-center items-center m-0 h-full  ">
                   <View className="w-full  bg-white pb-4 border-b border-gray-300">
@@ -168,11 +250,31 @@ const ProfileScreen = () => {
                   <ScrollView className="w-full mt-5">
                     <View className="w-full flex gap-4 m-0 items-center pt-3 pb-8 bg-[#0891b2] rounded-xl">
                       <View className="relative">
-                        <Image
-                          source={{ uri: data?.profile }}
-                          className="w-24 h-24 rounded-full opacity-70 "
-                        />
+                        <>
+                          <Image
+                            source={{ uri: imageUri || data?.profile }}
+                            className="w-24 h-24 rounded-full opacity-70 "
+                          />
+                          <TouchableOpacity
+                            onPress={chooseImage}
+                            style={{
+                              position: "absolute",
+                              bottom: 0,
+                              right: 0,
+                              backgroundColor: "#3498db",
+                              padding: 8,
+                              borderRadius: 50,
+                            }}
+                          >
+                            <MaterialCommunityIcons
+                              name="camera"
+                              color="white"
+                              size={20}
+                            />
+                          </TouchableOpacity>
+                        </>
                       </View>
+
                       <Text className="text-white mt-5 text-2xl semibold">
                         {data.first_name} {data.last_name}
                       </Text>
@@ -181,6 +283,7 @@ const ProfileScreen = () => {
                     {UpdateProfileJSon.map((field) => (
                       <View key={field.id} className="w-full">
                         <Input
+                          locked={field.locked}
                           placeholder={field.placeholder}
                           keyboardType={field.type}
                           value={data[field.id]}
@@ -188,6 +291,14 @@ const ProfileScreen = () => {
                         />
                       </View>
                     ))}
+                    {loading ? (
+                      <ActivityIndicator size={"small"} />
+                    ) : (
+                      <Button
+                        title="Update Profile"
+                        onPress={handleUpdateProfile}
+                      />
+                    )}
                   </ScrollView>
                 </View>
               )}
@@ -217,7 +328,6 @@ const UpdateProfileJSon: any[] = [
     type: "numeric",
     placeholder: "Contact",
   },
-
   {
     id: "user_name",
     type: "default",
@@ -227,9 +337,6 @@ const UpdateProfileJSon: any[] = [
     id: "email",
     type: "email-address",
     placeholder: "Email Address",
-  },
-  {
-    id: "password",
-    placeholder: "Password",
+    locked: true,
   },
 ];

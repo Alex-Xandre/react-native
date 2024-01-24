@@ -12,6 +12,7 @@ interface InputProps extends TextInputProps {
   variant?: "default" | "rounded";
   label?: string;
   type?: any;
+  locked?: boolean;
   onChangeText?: (text: string) => void;
 }
 
@@ -23,6 +24,7 @@ const Input: React.FC<InputProps> = ({
   type,
   variant = "default",
   label,
+  locked,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -42,17 +44,20 @@ const Input: React.FC<InputProps> = ({
     : "border-0.5 border-gray-400";
 
   return (
-    <View className="flex items-center space-y-4 mt-3">
+    <View className="flex items-center space-y-2 mt-3">
+      <Text className="text-left w-full ml-2 font-bold text-slate-900">
+        {placeholder}
+      </Text>
       <View className="bg-black/5 rounded-lg w-full p-3">
         <TextInput
           className=""
-          placeholderTextColor={"gray"}
-          placeholder={placeholder}
           value={value}
+          aria-disabled={locked}
           keyboardType={type}
           onChangeText={onChangeText}
           secureTextEntry={secureTextEntry}
           onFocus={handleInputFocus}
+          editable={!locked}
           onBlur={handleInputBlur}
           {...props}
         />

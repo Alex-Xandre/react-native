@@ -10,7 +10,7 @@ interface ContainerProps {
 
 const Container: React.FC<ContainerProps> = ({ children }) => {
   return (
-    <View className="bg-white pb-5 h-full w-full flex justify-between items-center">
+    <View className="bg-[#f8fafc] pb-5 px-3 h-full w-full flex justify-around items-center">
       <StatusBar style="light" />
       {children}
     </View>

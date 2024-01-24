@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "laundry-app",
-    "slug": "laundry-app",
+    "slug": "gislaundry",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "permissions": [
       "CAMERA",
       "READ_EXTERNAL_STORAGE",
@@ -29,10 +31,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "android.config.googleMaps.apiKey": "AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg"
+      "android.config.googleMaps.apiKey": "AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg",
+      "package": "com.gisgbased.laundryapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "766dc75e-44e0-4da7-98dc-e952200d1bdc"
+      }
+    },
+    "owner": "gisgbased"
   }
 }

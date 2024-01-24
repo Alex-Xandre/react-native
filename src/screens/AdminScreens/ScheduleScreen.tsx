@@ -138,7 +138,6 @@ const ScheduleScreen = () => {
             message: entry.message,
           });
         } else {
-          // Document doesn't exist, create it
           await scheduleRef.add({
             uid: user.uid,
             day: entry.day,

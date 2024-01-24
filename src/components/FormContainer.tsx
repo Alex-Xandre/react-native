@@ -9,6 +9,7 @@ interface FormContainer {
 }
 
 const FormContainer: React.FC<FormContainer> = ({ children, className }) => {
+  console.log(className)
   return <View className={`w-full px-5  ${className}`}>{children}</View>;
 };
 

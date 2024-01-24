@@ -39,9 +39,6 @@ const MainMenuAdmin = () => {
           );
         },
       })}
-      tabBarOptions={{
-        activeTintColor: "#3498db",
-      }}
     >
       {screens.map((screen) => (
         <Tab.Screen

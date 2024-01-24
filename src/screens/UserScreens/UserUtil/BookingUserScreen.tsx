@@ -67,8 +67,8 @@ const BookingUserScreen = ({ route }: any) => {
   );
   const bookingUid = uuidv4();
 
-  const { user } = useContext(AuthContext);
-  const navigation = useNavigation();
+  const { user } = useContext<any>(AuthContext);
+  const navigation = useNavigation<any>();
 
   const { clearCart } = useCart();
   React.useEffect(() => {

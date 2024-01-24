@@ -69,33 +69,27 @@ const CategoryScreen = () => {
         {items ? (
           <View
             style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}
-            className="p-5 rounded"
+            className="p-5 rounded mb-12"
           >
             {items.map((item, index) => {
               return (
                 <View
                   key={index}
-                  style={{ width: itemWidth }}
-                  className="shadow-sm bg-white" // Adjust padding as needed
+                  className=" w-full white mt-2  flex-row  p-5  bg-white"
                 >
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    className=" rounded w-full h-44 "
-                  />
-
-                  <View className="p-2">
+                  <View className="w-28 h-28 overflow-hidden rounded-lg">
+                    <Image
+                      source={{ uri: item.imageUrl }}
+                      className="w-full h-full"
+                    />
+                  </View>
+                  <View className="p-4">
                     <Text style={{ color: "#0891b2" }} className="text-base">
                       {item.category}
                     </Text>
 
                     <View className="">
-                      <TouchableWithoutFeedback className="">
-                        <MaterialCommunityIcons
-                          name="content-save-edit-outline"
-                          color="#3498db"
-                          size={24}
-                        />
-                      </TouchableWithoutFeedback>
+                      <Button title="Edit Category" />
                     </View>
                   </View>
                 </View>

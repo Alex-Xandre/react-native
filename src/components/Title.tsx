@@ -16,12 +16,12 @@ const Title: React.FC<CustomTextProps> = ({
     variant === "normal"
       ? "text-base"
       : variant === "bold"
-      ? "font-semibold text-xl text-5xl"
+      ? "font-semibold text-2xl"
       : "italic";
 
   return (
     <RNText
-      className={`text-white tracking-wider     ${textStyle}`}
+      className={`text-[#3498db] mt-10 tracking-wider text-center     ${textStyle}`}
       style={style}
       {...props}
     >
