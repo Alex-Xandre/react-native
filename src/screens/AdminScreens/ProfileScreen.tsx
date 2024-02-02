@@ -121,8 +121,15 @@ const ProfileScreen = () => {
   const handleUpdateProfile = async () => {
     try {
       setLoading(true);
+    
+      let profile = data.profile
+      if(imageUri){
+        const imageUrl = await uploadImage();
+        profile = imageUrl
+      }
+  
 
-      const imageUrl = await uploadImage();
+      console.log(data)
 
       await firebase
         .firestore()
@@ -134,7 +141,8 @@ const ProfileScreen = () => {
           contact: data.contact,
           user_name: data.user_name,
           email: data.email,
-          profile: imageUrl || data.profile,
+          profile: profile,
+          payment: data.payment,
         });
 
       Alert.alert("Profile updated successfully!");
@@ -332,6 +340,11 @@ const UpdateProfileJSon: any[] = [
     id: "user_name",
     type: "default",
     placeholder: "User Name",
+  },
+  {
+    id: "payment",
+    type: "default",
+    placeholder: "Payment",
   },
   {
     id: "email",

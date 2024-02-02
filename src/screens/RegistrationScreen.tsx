@@ -35,12 +35,21 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({
   };
 
   const submit = async () => {
-    const { first_name, last_name, contact, user_name, email, password } = data;
+    const {
+      first_name,
+      last_name,
+      contact,
+      user_name,
+      email,
+      password,
+      isAdmin,
+    } = data;
 
     try {
       const authUser = await firebase
         .auth()
         .createUserWithEmailAndPassword(email, password);
+
       const uid = authUser.user.uid;
 
       await firebase.auth().currentUser?.sendEmailVerification({
@@ -50,7 +59,7 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({
 
       try {
         const userRef = firebase.firestore().collection("users").doc(uid);
-
+        const roles = isAdmin === "Y" || isAdmin === "y" ? true : false;
         await userRef.set({
           uid,
           first_name,
@@ -58,7 +67,8 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({
           contact,
           user_name,
           email,
-          password, // Note: Storing passwords in plaintext is not secure. This is just for demonstration purposes.
+          password,
+          roles,
         });
 
         console.log("User data saved to Firestore");
@@ -86,14 +96,15 @@ const RegistrationScreen: React.FC<RegistrationScreenProps> = ({
             onChangeText={(text) => handleChange(input.id, text)}
           />
         ))}
-      <View className="mb-10">
-      <Button title="Register" variant="primary" onPress={submit} />
-        <Button
-          title="Back to Login"
-          variant="secondary"
-          onPress={() => navigation.navigate("Login")}
-        />
-      </View>
+
+        <View className="mb-10">
+          <Button title="Register" variant="primary" onPress={submit} />
+          <Button
+            title="Back to Login"
+            variant="secondary"
+            onPress={() => navigation.navigate("Login")}
+          />
+        </View>
       </ScrollView>
     </Container>
   );
@@ -117,11 +128,6 @@ const RegistrationJson: any[] = [
     type: "numeric",
     placeholder: "Contact",
   },
-  {
-    id: "address",
-    type: "default",
-    placeholder: "Address",
-  },
 
   {
     id: "email",
@@ -131,5 +137,9 @@ const RegistrationJson: any[] = [
   {
     id: "password",
     placeholder: "Password",
+  },
+  {
+    id: "isAdmin",
+    placeholder: "Admin Account (Y/N)",
   },
 ];

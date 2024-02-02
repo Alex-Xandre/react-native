@@ -41,14 +41,22 @@ const DashboardScreen = () => {
         data?.length > 0 &&
         data.filter((item) => {
           return (
+            item.address &&
             item.address.latitude === selectedAddress.latitude &&
             item.address.longitude === selectedAddress.longitude
           );
         });
-      setData(filteredData[0]);
-      formatData();
+  
+      if (filteredData.length > 0) {
+        setData(filteredData[0]);
+        formatData();
+      } else {
+        // Handle the case when there is no matching data
+        console.error("No matching data found");
+      }
     }
   }, [selectedAddress]);
+  
 
   const handleViewServices = () => {
     if (data) {
@@ -88,7 +96,12 @@ const DashboardScreen = () => {
 
         if (selectedAddress === null) {
           const usersData = usersQuery.docs.map((doc) => doc.data());
-          setAddresses(usersData.map((user) => user.address).flat() || []);
+          setAddresses(
+            usersData
+              .map((user) => user?.address)
+              .filter((address) => address !== undefined)
+              .flat() || []
+          );
 
           setData(usersData);
         }
@@ -102,37 +115,53 @@ const DashboardScreen = () => {
     }
   }, [user, selectedAddress, isFocused]);
 
-  console.log(data);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CartAppbar />
       {cartIsOpen && <CartContainer />}
+
       <View style={styles.container}>
         {addresses.length > 0 ? (
           <MapView
             style={styles.mapStyle}
             initialRegion={{
-              latitude: parseFloat(addresses[0].latitude),
-              longitude: parseFloat(addresses[0].longitude),
+              latitude: parseFloat(addresses[0]?.latitude || 0),
+              longitude: parseFloat(addresses[0]?.longitude || 0),
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             customMapStyle={mapStyle}
           >
-            {addresses.map((address, index) => (
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: parseFloat(address?.latitude),
-                  longitude: parseFloat(address?.longitude),
-                }}
-                onPress={() => {
-                  toggleModal();
-                  setSelectedAddress(address);
-                }}
-              ></Marker>
-            ))}
+            {addresses.map((address) => {
+              const key = `${address.latitude}-${address.longitude}`;
+              if (address && address.latitude && address.longitude) {
+                return (
+                  <Marker
+                    key={key}
+                    coordinate={{
+                      latitude: address.latitude,
+                      longitude: address.longitude,
+                    }}
+                    onPress={() => {
+                      toggleModal();
+
+                      setSelectedAddress(address);
+                    }}
+                  ></Marker>
+                );
+              } else {
+                console.error(`Invalid address data:`, address);
+                return (
+                  <Marker
+                    key={key}
+                    coordinate={{
+                      latitude: 0,
+                      longitude: 0,
+                    }}
+                  ></Marker>
+                );
+              }
+            })}
           </MapView>
         ) : (
           <Loading />

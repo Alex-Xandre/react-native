@@ -1,26 +1,61 @@
 import React, { useContext, useState } from "react";
-import { SafeAreaView, StyleSheet, View, Button, Alert } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
+import { SafeAreaView, StyleSheet, View, Alert, Text } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import Modal from "react-native-modal";
 import { AuthContext } from "../features/AuthContext";
 import { firebase } from "../../config";
+import Geolocation from "react-native-geocoding";
 import Loading from "./Loading";
+import Button from "./Button";
 
 const AdminMap = () => {
   const { user } = useContext(AuthContext);
 
-  const [address, setAddress] = useState(null);
+  const [address, setAddress] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [addressFormatted, setAddressFormatted] = useState<any>(null);
+
+  Geolocation.init("AIzaSyBiEejYn0WTm0Fxwc58ztsOl1btvFtlfmg");
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleStreetView = () => {
-    // Handle opening street view here
-    Alert.alert("Street View", `Open street view for ${user.name}`);
+  const handleStreetView = async () => {
+    try {
+      // Update the user's location in the database
+      await firebase
+        .firestore()
+        .collection("users")
+        .doc(user.uid)
+        .update({
+          address: {
+            latitude: address.address.latitude,
+            longitude: address.address.longitude,
+          },
+        });
+
+      // Display a success message
+      Alert.alert("Success", "Location updated successfully");
+      setModalVisible(false);
+    } catch (error) {
+      // Display an error message if the update fails
+      console.error("Error updating location:", error);
+      Alert.alert("Error", "Failed to update location. Please try again.");
+    }
   };
 
+  const handleMarkerDragEnd = async (e) => {
+    // Handle the logic when the marker is dragged to a new location
+    const { latitude, longitude } = e.nativeEvent.coordinate;
+    const newAddress = { ...address, address: { latitude, longitude } };
+    setAddress(newAddress);
+
+    const result = await Geolocation.from(latitude, longitude);
+
+    const formattedAddress = result.results[0].formatted_address;
+    setAddressFormatted(formattedAddress);
+  };
   React.useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -31,7 +66,20 @@ const AdminMap = () => {
           .get();
 
         if (userDoc.exists) {
-          setAddress(userDoc.data());
+          const userAddress = userDoc.data()?.address;
+
+          // Check if user has an address
+          if (userAddress) {
+            setAddress(userDoc.data());
+          } else {
+            // Set a default location if user doesn't have an address
+            setAddress({
+              address: {
+                latitude: 8.198176729901983,
+                longitude: 124.22236785292625,
+              },
+            });
+          }
         } else {
           console.log("User does not exist");
         }
@@ -64,6 +112,8 @@ const AdminMap = () => {
                 latitude: parseFloat(address?.address.latitude),
                 longitude: parseFloat(address?.address.longitude),
               }}
+              draggable
+              onDragEnd={handleMarkerDragEnd} // Ensure this is correctly set
               onPress={toggleModal}
             ></Marker>
           </MapView>
@@ -76,8 +126,13 @@ const AdminMap = () => {
           onBackdropPress={toggleModal}
           className="m-0  w-full rounded-t-xl"
         >
-          <View className="bg-white h-72 absolute bottom-0 w-full rounded-t-3xl">
+          <View className="bg-white h-72 absolute bottom-0 w-full rounded-t-3xl p-4">
             {/* Your details and Street View button can be placed here */}
+            <View>
+              <Text>New Address:</Text>
+              <Text>{addressFormatted}</Text>
+              <Button title="Update Location" onPress={handleStreetView} />
+            </View>
           </View>
         </Modal>
       </View>
@@ -86,7 +141,6 @@ const AdminMap = () => {
 };
 
 export default AdminMap;
-
 const mapStyle = [
   { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },

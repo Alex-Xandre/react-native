@@ -4,12 +4,16 @@ import { View, Text } from "react-native";
 import { firebase } from "../../../config";
 import { AuthContext } from "../../features/AuthContext";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import Button from "../../components/Button";
+import { useNavigation } from "@react-navigation/native";
 
 const ReportScreen = () => {
   const { user } = useContext(AuthContext);
   const [data, setData] = React.useState<any>([]);
   const [categories, setCategories] = React.useState<any>([]);
   const tableHeaders = ["Date", "Price", "Status", "Action"];
+
+  const navigation = useNavigation();
   React.useEffect(() => {
     if (user !== null) {
       const unsubscribe = firebase
@@ -149,7 +153,14 @@ const ReportScreen = () => {
                   <Text className="   font-bold">Total:</Text>
                   <Text className="">₱ {bks.total}</Text>
                 </View>
-
+                <Button
+                  title="View Details"
+                  onPress={() =>
+                    navigation.navigate("ReportScreenDetails", {
+                      bks,
+                    })
+                  }
+                />
                 <></>
               </View>
             );

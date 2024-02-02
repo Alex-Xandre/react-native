@@ -16,6 +16,7 @@ import CategoryUserScreen from "./src/screens/UserScreens/UserUtil/CategoryUserS
 import { CartContextProvider, useCart } from "./src/features/CartContext";
 import BookingUserScreen from "./src/screens/UserScreens/UserUtil/BookingUserScreen";
 import PaymentUserScreen from "./src/screens/UserScreens/UserUtil/PaymentUserScreen";
+import ReportScreenDetails from "./src/screens/AdminScreens/ReportScreenDetails";
 
 const Stack = createStackNavigator();
 
@@ -49,7 +50,7 @@ function App() {
         if (userDoc.exists) {
           setRoles(userDoc.data().roles);
         } else {
-          console.log("User does not exist");
+          console.log("User does not exists");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -67,11 +68,21 @@ function App() {
         {isLoggedIn ? (
           <>
             {roles === true ? (
-              <Stack.Screen
-                options={{ headerShown: false }}
-                name="HomeUser"
-                component={HomeScreen}
-              />
+              <>
+                <Stack.Screen
+                  options={{ headerShown: false }}
+                  name="HomeUser"
+                  component={HomeScreen}
+                />
+                <Stack.Screen
+                  options={{
+                    headerTitle: "",
+                    headerBackTitleVisible: false,
+                  }}
+                  name="ReportScreenDetails"
+                  component={ReportScreenDetails}
+                />
+              </>
             ) : (
               <>
                 <Stack.Screen
